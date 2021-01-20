@@ -1,17 +1,14 @@
-import ctypes as ct
-from ctypes import  windll
+import win32gui
+from datetime import datetime
 
-def getWindowTitle(hWnd):
-    length = windll.user32.GetWindowTextLengthW(hWnd)
-    buff = ct.create_unicode_buffer(length + 1)
-    windll.user32.GetWindowTextW(hWnd, buff, length + 1)
-    return buff.value if buff.value else None
+def enum_windows_callback(hwnd, log_file):
+    if win32gui.IsWindowVisible(hwnd) and win32gui.IsIconic(hwnd):
+        log_file.write(f"{datetime.now()}: {win32gui.GetWindowText(hwnd)}\n")
 
 def main():
-    while True:
-        hWnd = windll.user32.GetForegroundWindow()
-        p = windll.user32.GetParent(hWnd)
-        print("Active:", getWindowTitle(hWnd), "    Parent:", getWindowTitle(p))
+    with open("log.txt", "a") as log_file:
+        while True:
+            win32gui.EnumWindows(enum_windows_callback, log_file)
 
 if __name__ == "__main__":
     main()

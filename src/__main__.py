@@ -21,12 +21,14 @@ def enum_windows_callback(hwnd, lParam):
     if (win32gui.IsWindowVisible(hwnd) and not win32gui.IsIconic(hwnd) and
             not win32gui.GetWindow(hwnd, win32con.GW_OWNER)):
         text = win32gui.GetWindowText(hwnd)
-        if text:
-            pid = win32process.GetWindowThreadProcessId(hwnd)[1]
-            process = psutil.Process(pid)
-            with process.oneshot():
-                if process.status() == psutil.STATUS_RUNNING:
-                    log_file.write(f"{datetime.now()}: {process.name()}: {text}\n")
+        if not text:
+            return
+        pid = win32process.GetWindowThreadProcessId(hwnd)[1]
+        process = psutil.Process(pid)
+        with process.oneshot():
+            if process.status() != psutil.STATUS_RUNNING:
+                return
+            log_file.write(f"{datetime.now()}: {process.name()}: {text}\n")
 
 
 def log_activity_action():

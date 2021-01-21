@@ -4,8 +4,10 @@ import os
 import sched
 import time
 
+import psutil
 import win32gui
 import win32con
+import win32process
 
 DELAY_LOG_ACTIVITY = 1
 DELAY_FLUSH_LOG = 5
@@ -20,7 +22,11 @@ def enum_windows_callback(hwnd, lParam):
             not win32gui.GetWindow(hwnd, win32con.GW_OWNER)):
         text = win32gui.GetWindowText(hwnd)
         if text:
-            log_file.write(f"{datetime.now()}: {text}\n")
+            pid = win32process.GetWindowThreadProcessId(hwnd)[1]
+            process = psutil.Process(pid)
+            with process.oneshot():
+                if process.status() == psutil.STATUS_RUNNING:
+                    log_file.write(f"{datetime.now()}: {process.name()}: {text}\n")
 
 
 def log_activity_action():

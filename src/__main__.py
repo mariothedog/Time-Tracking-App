@@ -1,3 +1,4 @@
+import atexit
 from datetime import datetime
 import os
 import sched
@@ -10,6 +11,7 @@ DELAY_FLUSH_LOG = 5
 
 scheduler = sched.scheduler(time.time, time.sleep)
 log_file = open("log.txt", "a")
+atexit.register(log_file.close)
 
 
 def enum_windows_callback(hwnd, lParam):
@@ -29,12 +31,9 @@ def flush_log_action():
 
 
 def main():
-    try:
-        log_activity_action()
-        flush_log_action()
-        scheduler.run()
-    except:
-        log_file.close()
+    log_activity_action()
+    flush_log_action()
+    scheduler.run()
 
 
 if __name__ == "__main__":

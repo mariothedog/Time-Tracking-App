@@ -5,6 +5,7 @@ import sched
 import time
 
 import win32gui
+import win32con
 
 DELAY_LOG_ACTIVITY = 1
 DELAY_FLUSH_LOG = 5
@@ -15,7 +16,8 @@ atexit.register(log_file.close)
 
 
 def enum_windows_callback(hwnd, lParam):
-    if win32gui.IsWindowVisible(hwnd) and not win32gui.IsIconic(hwnd):
+    if (win32gui.IsWindowVisible(hwnd) and not win32gui.IsIconic(hwnd) and
+            not win32gui.GetWindow(hwnd, win32con.GW_OWNER)):
         text = win32gui.GetWindowText(hwnd)
         if text:
             log_file.write(f"{datetime.now()}: {text}\n")

@@ -10,7 +10,7 @@ DELAY_LOG_ACTIVITY = 1
 DELAY_FLUSH_LOG = 5
 
 scheduler = sched.scheduler(time.time, time.sleep)
-log_file = open("log.txt", "a")
+log_file = open("log.txt", "a", encoding="utf-8")
 atexit.register(log_file.close)
 
 

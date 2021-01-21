@@ -16,7 +16,9 @@ atexit.register(log_file.close)
 
 def enum_windows_callback(hwnd, lParam):
     if win32gui.IsWindowVisible(hwnd) and not win32gui.IsIconic(hwnd):
-        log_file.write(f"{datetime.now()}: {win32gui.GetWindowText(hwnd)}\n")
+        text = win32gui.GetWindowText(hwnd)
+        if text:
+            log_file.write(f"{datetime.now()}: {text}\n")
 
 
 def log_activity_action():

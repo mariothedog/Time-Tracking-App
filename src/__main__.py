@@ -1,39 +1,55 @@
-import atexit
-from datetime import datetime
-import os
+from datetime import timedelta
 import sched
+import threading
 import time
 
 import psutil
-import win32gui
-import win32process
+from PyQt5.QtWidgets import QApplication, QDesktopWidget
+from win32gui import GetForegroundWindow, GetWindowText, MoveWindow
+from win32process import GetWindowThreadProcessId
+
+from timer_window import TimerWindow
 
 DELAY_LOG_ACTIVITY = 1
 DELAY_FLUSH_LOG = 5
 
 scheduler = sched.scheduler(time.time, time.sleep)
-log_file = open("log.txt", "a", encoding="utf-8")
-atexit.register(log_file.close)
+
+app = QApplication([])
+window = TimerWindow()
+
+seconds_spent = {}
 
 
-def log_activity_action():
-    hwnd = win32gui.GetForegroundWindow()
-    pid = win32process.GetWindowThreadProcessId(hwnd)[1]
-    process = psutil.Process(pid)
-    log_file.write(f"{datetime.now()}: {process.name()}\n")
-    scheduler.enter(DELAY_LOG_ACTIVITY, 1, log_activity_action)
+def log_activity_action(last_process=None):
+    hwnd = GetForegroundWindow()
+    name = None
+    if hwnd and GetWindowText(hwnd) != window.windowTitle():
+        pid = GetWindowThreadProcessId(hwnd)[1]
+        process = psutil.Process(pid)
 
+        name = process.name()
+        if name != last_process:  # TODO: Move window
+            pass
+        if name in seconds_spent:
+            seconds_spent[name] += 1
+        else:
+            seconds_spent[name] = 0
+        seconds = seconds_spent[name]
+        window.label.setText(str(timedelta(seconds=seconds)))
 
-def flush_log_action():
-    log_file.flush()
-    os.fsync(log_file.fileno())
-    scheduler.enter(DELAY_FLUSH_LOG, 1, flush_log_action)
+    scheduler.enter(DELAY_LOG_ACTIVITY, 1, lambda: log_activity_action(name))
 
 
 def main():
+    window.show()
+    window.clearFocus()
+
     log_activity_action()
-    flush_log_action()
-    scheduler.run()
+
+    scheduler_thread = threading.Thread(target=scheduler.run)
+    scheduler_thread.start()
+    app.exec_()
 
 
 if __name__ == "__main__":

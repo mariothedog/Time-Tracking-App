@@ -11,7 +11,6 @@ class TimerWindow(QMainWindow):
         self.setFixedSize(100, 30)
         self.setWindowFlags(Qt.FramelessWindowHint | Qt.WindowStaysOnTopHint)
         self.setStyleSheet("border:1px solid black")
-        self.setFocusPolicy(Qt.NoFocus)
 
         self.label = QLabel("0:00:00")
         self.label.setFont(QFont("MS Shell Dlg 2", 16))

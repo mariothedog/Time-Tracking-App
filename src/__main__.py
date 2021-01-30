@@ -13,6 +13,8 @@ from timer_window import TimerWindow
 DELAY_LOG_ACTIVITY = 1
 DELAY_FLUSH_LOG = 5
 
+WINDOW_PADDING_X_RIGHT = 30
+
 scheduler = sched.scheduler(time.time, time.sleep)
 
 app = QApplication([])
@@ -30,7 +32,7 @@ def log_activity_action(last_hwnd=None):
             hwnd = last_hwnd
 
         rect = GetWindowRect(hwnd)
-        pos_x = rect[2] - window.width() * 1.5
+        pos_x = rect[2] - window.width() - WINDOW_PADDING_X_RIGHT
         pos_y = rect[1] + window.height()
         window.move(pos_x, pos_y)
 

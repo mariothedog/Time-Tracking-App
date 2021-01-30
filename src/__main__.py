@@ -28,7 +28,7 @@ def log_activity_action(last_hwnd=None):
         if GetWindowText(hwnd) == window.windowTitle():  # Prevent focus on timer window
             SetForegroundWindow(last_hwnd)
             hwnd = last_hwnd
-        
+
         rect = GetWindowRect(hwnd)
         pos_x = rect[2] - window.width() * 1.5
         pos_y = rect[1] + window.height()

@@ -11,7 +11,6 @@ from win32process import GetWindowThreadProcessId
 from timer_window import TimerWindow
 
 DELAY_LOG_ACTIVITY = 1
-DELAY_FLUSH_LOG = 5
 
 WINDOW_PADDING_X_RIGHT = 30
 

@@ -4,8 +4,8 @@ import threading
 import time
 
 import psutil
-from PyQt5.QtWidgets import QApplication, QDesktopWidget
-from win32gui import GetForegroundWindow, SetForegroundWindow, GetWindowText, MoveWindow
+from PyQt5.QtWidgets import QApplication
+from win32gui import GetForegroundWindow, SetForegroundWindow, GetWindowText, GetWindowRect
 from win32process import GetWindowThreadProcessId
 
 from timer_window import TimerWindow
@@ -25,16 +25,19 @@ def log_activity_action(last_hwnd=None):
     hwnd = GetForegroundWindow()
     name = None
     if hwnd:
-        if GetWindowText(hwnd) == window.windowTitle(): # Prevent focus on timer
+        if GetWindowText(hwnd) == window.windowTitle():  # Prevent focus on timer window
             SetForegroundWindow(last_hwnd)
             hwnd = last_hwnd
-            
+        
+        rect = GetWindowRect(hwnd)
+        pos_x = rect[2] - window.width() * 1.5
+        pos_y = rect[1] + window.height()
+        window.move(pos_x, pos_y)
+
         pid = GetWindowThreadProcessId(hwnd)[1]
         process = psutil.Process(pid)
 
         name = process.name()
-        if hwnd != last_hwnd: # TODO: Move window
-            pass
         if name in seconds_spent:
             seconds_spent[name] += 1
         else:

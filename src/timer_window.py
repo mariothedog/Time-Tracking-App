@@ -35,9 +35,6 @@ class TimerWindow(QMainWindow):
         self.update_window_timer.timeout.connect(self.update_window)
         self.update_window_timer.start(self.INTERVAL_UPDATE_WINDOW)
 
-    def closeEvent(self, event):
-        event.ignore()
-
     def update_window(self):
         hwnd = GetForegroundWindow()
         name = None
